@@ -7,3 +7,4 @@ def fitnessFunction():
 
 # algorithm itself
 def algorithm():
+  pass
