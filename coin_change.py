@@ -78,32 +78,44 @@ def fitness_func(chromosome):
 
     return greedy - optimal
 
+def generate_chromosome(n_denoms=5, max_amount=1000):
 
-def generate_chromosome(n_denoms=5, max_amount=50):
-    # denominations + target amount
-    # including 1 so there's always a valid solution for dp to find
-    # wider denomination range (up to 25) so gaps like [1,15,25] target 30 can emerge
     chromosome = [1]
 
-    for i in range(n_denoms - 1):
-        chromosome.append(random.randint(2, 25))
+    while len(chromosome) < n_denoms:
+        val = random.randint(2,100)
+        if val not in chromosome:
+            chromosome.append(val)
 
-    chromosome.append(random.randint(15, max_amount))
-
+    chromosome.sort()  
+    chromosome.append(random.randint(15, max_amount)) # target amount
     return chromosome
 
-
 def mutate(chromosome, mutation_rate=0.3):
-    result = [1]  # keep 1 fixed so dp always has a solution
+    seen = {1}
+    result = [1]
 
     for i in range(1, len(chromosome) - 1):
         if random.random() < mutation_rate:
-            result.append(random.randint(2, 25))
+            val = random.randint(2, 100)
         else:
-            result.append(chromosome[i])
+            val = chromosome[i]
+        if val not in seen:
+            seen.add(val)
+            result.append(val)
+        else:
+            # pick a fresh value that doesn't collide
+            attempts = 0
+            while attempts < 20:
+                val = random.randint(2, 100)
+                if val not in seen:
+                    seen.add(val)
+                    result.append(val)
+                    break
+                attempts += 1
 
     if random.random() < mutation_rate:
-        result.append(random.randint(15, 50))
+        result.append(random.randint(15, 1000))
     else:
         result.append(chromosome[-1])
 
